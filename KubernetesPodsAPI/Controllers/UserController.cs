@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using KubernetesPodsAPI.Data;
 using KubernetesPodsAPI.Dtos;
 using KubernetesPodsAPI.Models;
+using KubernetesPodsAPI.Services;
 
 namespace KubernetesPodsAPI.Controllers
 {
@@ -14,10 +15,12 @@ namespace KubernetesPodsAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly ITokenService _tokenService;
 
-        public UserController(ApplicationDbContext context)
+        public UserController(ApplicationDbContext context, ITokenService tokenService)
         {
             _context = context;
+            _tokenService = tokenService;
         }
 
         [HttpPost("register")]
@@ -38,7 +41,7 @@ namespace KubernetesPodsAPI.Controllers
             return new UserDto
             {
                 Username = user.Login,
-                Token = ""
+                Token = _tokenService.CreateToken(user)
             };
         }
 
@@ -69,7 +72,7 @@ namespace KubernetesPodsAPI.Controllers
             return new UserDto
             {
                 Username = user.Login,
-                Token = ""
+                Token = _tokenService.CreateToken(user)
             };
         }
     }
